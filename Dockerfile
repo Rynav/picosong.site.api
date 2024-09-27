@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 3002
 
 # Command to run your application
-CMD ["bun", "run", "start"]
+CMD ["bun", "run", "dev"]
