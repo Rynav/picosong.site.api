@@ -2,7 +2,7 @@ import { Elysia } from "elysia";
 import Song from "./db/model/Song";
 import sequelize from "./db/connection";
 import { swagger } from '@elysiajs/swagger'
-import {apiSongArtworkGet, apiSongArtworkVerify, apiSongMediaGet, apiSongMetadataGet} from "./swagger/swagger-details"
+import {apiSongArtworkGet, apiSongArtworkVerify, apiSongMediaGet, apiSongMetadataGet, apiSongDetailsGet} from "./swagger/swagger-details"
 import { readdir } from "node:fs/promises";
 import { staticPlugin } from '@elysiajs/static'
 import {join} from "path"
@@ -64,6 +64,16 @@ app.group("/api/song", (app) =>
 
 			//@ts-ignore
 		}, apiSongMediaGet)
+
+		.get("/:id/details", async ({set, params: {id}}) => {
+			if(!validateID(id)) {set.status = "Bad Request"; return {error: "Invalid ID structure!"}}
+			const song = await SongDetails.findByPk(id);
+			if(song == null) {set.status = "Not Found"; return {error: "Song not found!"} }
+			let jsonSong = song.toJSON();
+			return jsonSong;
+
+			//@ts-ignore
+		}, apiSongDetailsGet)
 
 		.get("/:id/metadata", async ({set, params:{id}}) => {
 			return {error: "TBD"}

@@ -191,6 +191,76 @@ const apiSongMediaGet = {
 const apiSongMetadataGet = {
   detail: {
     tags: ["Media"],
+    description: "TBD!"
+  },
+};
+
+const apiSongDetailsGet = {
+  detail: {
+    tags: ["Media"],
+    parameters: [
+      {
+        name: "id",
+        in: "path",
+        description: "The song ID found in the picosong.com URL.",
+        required: true,
+        example: "wKSYu",
+      },
+    ],
+    description: "Get the file details corresponding to the given song ID.",
+    responses: {
+      "200": {
+        description:
+          "Returns 200, the song details object if the corresponding song exists.",
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              properties: {
+                id: { type: "String", example: "wKSYu" },
+                filename: {type: "String", example: "mix_2m59s (audio-joiner.com)"},
+                url: {type: "String", example: "https://web.archive.org/web/20191011145342if_/http://picosong.s3.amazonaws.com/wKSYu/mix_2m59s%20%28audio-joiner.com%29.mp3?Signature=R8FLsYaYsNwtH%2BDRVXWG2tzKI3s%3D&Expires=1570806521&AWSAccessKeyId=AKIAIVYGJY7GGRJY2Y3A"},
+                filesize: {type: "String", example: "6.88 MB"},
+                encoder: {type: "String", example: "audio-joiner.com"},
+                uploaddate: {type: "String", example: "11 Jul 2019 21:25:09 GMT"},
+                length: {type: "Number", example: 179},
+              },
+            },
+          },
+        },
+      },
+      "400": {
+        description:
+          "Returns 400 when user submitted an invalid ID string.",
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              properties: {
+                erro: {type: "String", example: "Invalid ID structure!"}
+              },
+            },
+          },
+        },
+      },
+      "404": {
+        description:
+          "Returns 404 if given song doesn't exist.",
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              properties: {
+                error: {
+                  type: "String",
+                  example: "Song not found!",
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   },
 };
 
@@ -199,4 +269,5 @@ export {
   apiSongArtworkVerify,
   apiSongMediaGet,
   apiSongMetadataGet,
+  apiSongDetailsGet
 };

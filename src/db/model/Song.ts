@@ -2,8 +2,8 @@ import {Model, DataTypes} from "sequelize"
 import sequelize from "../connection"
 
 
-class Song extends Model{}
-Song.init({
+class SongArtwork extends Model{}
+SongArtwork.init({
     id: {
         type: DataTypes.STRING,
         primaryKey: true
@@ -11,6 +11,33 @@ Song.init({
     artwork: {
         type: DataTypes.STRING
     }
-}, {sequelize, modelName: "Song", timestamps: false, tableName: "songs"})
+}, {sequelize, modelName: "SongArtwork", timestamps: false, tableName: "songs"})
 
-export default Song
+
+class SongDetails extends Model{}
+SongDetails.init({
+    id:{
+        type: DataTypes.STRING,
+        primaryKey: true,
+    },
+    filename: {
+        type: DataTypes.STRING,
+    },
+    url: {
+        type: DataTypes.STRING,
+    },
+    filesize: {
+        type: DataTypes.STRING,
+    },
+    encoder: {
+        type: DataTypes.STRING
+    },
+    uploaddate: {
+        type: DataTypes.STRING
+    },
+    length: {
+        type: DataTypes.NUMBER
+    }
+}, {sequelize, modelName: "SongDetails", timestamps: false, tableName: "files"})
+
+export default {SongArtwork, SongDetails}
