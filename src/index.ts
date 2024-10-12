@@ -4,7 +4,6 @@ import sequelize from "./db/connection";
 import { swagger } from '@elysiajs/swagger'
 import {apiSongArtworkGet, apiSongArtworkVerify, apiSongMediaGet, apiSongMetadataGet, apiSongDetailsGet} from "./swagger/swagger-details"
 import { readdir } from "node:fs/promises";
-import { staticPlugin } from '@elysiajs/static'
 import {join} from "path"
 
 const app = new Elysia()
@@ -22,9 +21,15 @@ function validateUUID(uuid: string): boolean{
 }
 
 async function findFile(id: string): Promise<string>{
-	const files = await readdir(join("./files/files/picosong.s3.amazonaws.com", id))
-	if(files.length > 0) return join("./files/files/picosong.s3.amazonaws.com", id, files[0])
-	else return "None";
+	try{
+		const files = await readdir(join("./files/files/picosong.s3.amazonaws.com", id))
+		if(files.length > 0) return join("./files/files/picosong.s3.amazonaws.com", id, files[0])
+		else return "None";
+	}
+	catch(error: any){
+		console.log("An error occured\n", error)
+		return "None";
+	}
 }
 
 
@@ -55,11 +60,14 @@ app.group("/api/song", (app) =>
 		
 		.get("/:id/media", async ({set, params: {id}}) => { 
 			if(!validateID(id)) {set.status = "Bad Request"; return {error: "Invalid ID structure!"}}
-			const song = await Song.findOne({where: {id: id}});
-			if(song == null) {set.status = "Not Found"; return {error: "Song not found!"} }
-
+			
 			let file = await findFile(id)
-			console.log(file);
+
+			if(file == "None") {set.status = "Not Found"; return {error: "Song not found!"}}
+
+			let filename = file.split("\\")[4]
+			set.headers["content-type"] = "audio/mpeg"
+			set.headers["Content-Disposition"] = `attachment; filename="${filename}"`
 			return Bun.file(file)
 
 			//@ts-ignore
@@ -85,7 +93,7 @@ app.group("/api/song", (app) =>
 
 
 app.use(swagger({scalarConfig: {theme: "alternate"}, documentation: {info: {title: 'Picosong archive API',version: '0.0.1', description:"[Picosong.com](https://picosong.com) archival project. We try to provide every song uploaded to that platform to be available for easy download using this API."}}}))
-app.use(staticPlugin({assets:"./files/files/picosong.s3.amazonaws.com/", prefix: ""}))
+//app.use(staticPlugin({assets:"./files/files/picosong.s3.amazonaws.com/", prefix: ""}))
 app.listen(3002);
 
 console.log(
