@@ -6,6 +6,7 @@ import {apiSongArtworkGet, apiSongArtworkVerify, apiSongMediaGet, apiSongMetadat
 import { readdir } from "node:fs/promises";
 import {join} from "path"
 import { telemetry } from "./helpers/telemetry";
+import staticPlugin from "@elysiajs/static";
 
 const app = new Elysia()
 
@@ -96,7 +97,7 @@ app.group("/api/song", (app) =>
 
 
 app.use(swagger({scalarConfig: {theme: "alternate"}, documentation: {info: {title: 'Picosong archive API',version: '0.0.1', description:"[Picosong.com](https://picosong.com) archival project. We try to provide every song uploaded to that platform to be available for easy download using this API."}}}))
-//app.use(staticPlugin({assets:"./files/files/picosong.s3.amazonaws.com/", prefix: ""}))
+app.use(staticPlugin({assets:"./src/html", prefix: ""}))
 app.listen(3002);
 
 

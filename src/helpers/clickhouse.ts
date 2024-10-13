@@ -12,10 +12,7 @@ export default async function addLog(endpoint: string, query_params: string, res
         }
     })
 
-    console.log(queryString)
-
     let responseText = await response.text()
-    console.log(responseText)
     return responseText;
     
 }
