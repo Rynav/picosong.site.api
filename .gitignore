@@ -45,3 +45,5 @@ files/*
 
 src/db/*.sqlite
 src/db/*.db
+
+.env

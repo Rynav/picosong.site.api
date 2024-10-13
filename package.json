@@ -9,6 +9,7 @@
     "@elysiajs/static": "^1.1.1",
     "@elysiajs/swagger": "^1.1.5",
     "elysia": "latest",
+    "elysia-ip": "^1.0.7",
     "sequelize": "^6.37.4",
     "sqlite3": "^5.1.7"
   },

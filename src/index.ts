@@ -5,6 +5,7 @@ import { swagger } from '@elysiajs/swagger'
 import {apiSongArtworkGet, apiSongArtworkVerify, apiSongMediaGet, apiSongMetadataGet, apiSongDetailsGet} from "./swagger/swagger-details"
 import { readdir } from "node:fs/promises";
 import {join} from "path"
+import { telemetry } from "./helpers/telemetry";
 
 const app = new Elysia()
 
@@ -31,6 +32,8 @@ async function findFile(id: string): Promise<string>{
 		return "None";
 	}
 }
+
+app.use(telemetry())
 
 
 app.group("/api/song", (app) => 
@@ -95,6 +98,7 @@ app.group("/api/song", (app) =>
 app.use(swagger({scalarConfig: {theme: "alternate"}, documentation: {info: {title: 'Picosong archive API',version: '0.0.1', description:"[Picosong.com](https://picosong.com) archival project. We try to provide every song uploaded to that platform to be available for easy download using this API."}}}))
 //app.use(staticPlugin({assets:"./files/files/picosong.s3.amazonaws.com/", prefix: ""}))
 app.listen(3002);
+
 
 console.log(
   `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
