@@ -1,5 +1,5 @@
 import { Elysia } from "elysia";
-import Song from "./db/model/Song";
+import {SongArtwork, SongDetails, ApiKeys} from "./db/model/DatabaseModels";
 import sequelize from "./db/connection";
 import { swagger } from '@elysiajs/swagger'
 import {apiSongArtworkGet, apiSongArtworkVerify, apiSongMediaGet, apiSongMetadataGet, apiSongDetailsGet} from "./swagger/swagger-details"
@@ -7,6 +7,8 @@ import { readdir } from "node:fs/promises";
 import {join} from "path"
 import { telemetry } from "./helpers/telemetry";
 import staticPlugin from "@elysiajs/static";
+import { ip } from "elysia-ip";
+import {v4 as uuidv4} from "uuid"
 
 const app = new Elysia()
 
@@ -36,13 +38,13 @@ async function findFile(id: string): Promise<string>{
 
 app.use(telemetry())
 
-
 app.group("/api/song", (app) => 
 
 	app
+		// SONG ARTWORK
 		.get("/:id/artwork", async ({set, params: {id}}) => {
 			if(!validateID(id)) {set.status = "Bad Request"; return {error: "Invalid ID structure!"}}
-			const song = await Song.findOne({where: {id: id}});
+			const song = await SongArtwork.findOne({where: {id: id}});
 			if(song == null) {set.status = "Not Found"; return {error: "Song not found!"} }
 			const jsonSong = song?.toJSON()
 			if(jsonSong.artwork == "Null") { set.status = "Not Found"; return {error: "No artwork found!"}}
@@ -54,7 +56,7 @@ app.group("/api/song", (app) =>
 		.get("/:id/verify", async ({set, params: {id}}) => {
 			if(!validateUUID(id)) {set.status = "Bad Request"; return {error: "Invalid UUID structure!"}}
 			let idFixed = id.endsWith(".png") ? id : id.concat(".png")
-			const artwork = await Song.findOne({where: {artwork: idFixed}});
+			const artwork = await SongArtwork.findOne({where: {artwork: idFixed}});
 			if(artwork == null) {set.status = "Not Found"; return {error: "Artwork not found!"} }
 			const jsonSong = artwork?.toJSON()
 		
@@ -62,6 +64,7 @@ app.group("/api/song", (app) =>
 			//@ts-ignore
 		}, apiSongArtworkVerify )
 		
+		// SONG MP3 FILE
 		.get("/:id/media", async ({set, params: {id}}) => { 
 			if(!validateID(id)) {set.status = "Bad Request"; return {error: "Invalid ID structure!"}}
 			
@@ -69,7 +72,8 @@ app.group("/api/song", (app) =>
 
 			if(file == "None") {set.status = "Not Found"; return {error: "Song not found!"}}
 
-			let filename = file.split("\\")[4]
+			let filename = file.split("/")[4]
+			console.log(filename);
 			set.headers["content-type"] = "audio/mpeg"
 			set.headers["Content-Disposition"] = `attachment; filename="${filename}"`
 			return Bun.file(file)
@@ -92,8 +96,6 @@ app.group("/api/song", (app) =>
 		}, apiSongMetadataGet)
 
 )
-
-
 
 
 app.use(swagger({scalarConfig: {theme: "alternate"}, documentation: {info: {title: 'Picosong archive API',version: '0.0.1', description:"[Picosong.com](https://picosong.com) archival project. We try to provide every song uploaded to that platform to be available for easy download using this API."}}}))
