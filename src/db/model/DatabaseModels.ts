@@ -40,4 +40,21 @@ SongDetails.init({
     }
 }, {sequelize, modelName: "SongDetails", timestamps: false, tableName: "files"})
 
-export default {SongArtwork, SongDetails}
+class ApiKeys extends Model{}
+ApiKeys.init({
+    api_key: {
+        type: DataTypes.STRING,
+        primaryKey: true,
+    },
+    user_ip: {
+        type: DataTypes.STRING,
+    },
+    quota: {
+        type: DataTypes.NUMBER
+    },
+    timestamp:{
+        type: DataTypes.DATE
+    }
+}, {sequelize, modelName:"ApiKeys",timestamps: false, tableName: "api_keys"})
+
+export {SongArtwork, SongDetails, ApiKeys}

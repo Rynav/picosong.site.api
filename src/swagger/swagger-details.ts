@@ -103,7 +103,7 @@ const apiSongArtworkVerify = {
       },
       "400": {
         description:
-          "Returns 400 when user submitted an invalid UUId string.",
+          "Returns 400 when user submitted an invalid UUID string.",
         content: {
           "application/json": {
             schema: {

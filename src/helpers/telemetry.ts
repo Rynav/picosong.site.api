@@ -9,8 +9,8 @@ export const telemetry = ({ methods = ["GET", "PUT", "POST", "DELETE"]} = {}) =>
             .onAfterHandle({as: "global"}, async (ctx) => {
                 if(!ctx.route.startsWith("/api")) return
                 //@ts-ignore
-                await addLog(ctx.route, ctx.params.id, ctx.set.status == "Not Found" ? 404 : ctx.set.status , Date.now() - ctx.start, ctx.ip, "test");
+                await addLog(ctx.route, ctx.params? ctx.params.id : "", ctx.set.status == "Not Found" ? 404 : ctx.set.status , Date.now() - ctx.start, ctx.ip, "test");
             })
             .onError({as: "global"}, (ctx) => {
-                console.log(ctx)
+                //console.log(ctx)
             })
